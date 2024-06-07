@@ -10,11 +10,11 @@ env:
   TURBO_TELEMETRY_DISABLED: 1
 jobs:
   lambda-tests:
-    runs-on: ubuntu-latest
+    runs-on: warp-ubuntu-latest-x64-4x
     name: Lambda integration
     steps:
       - uses: actions/checkout@main
-      - uses: actions/setup-node@v3
+      - uses: Warpbuilds/setup-node@v4
         with:
           node-version: 16
       - uses: oven-sh/setup-bun@v1
@@ -34,7 +34,7 @@ jobs:
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
-      - uses: Swatinem/rust-cache@v2
+      - uses: WarpBuilds/rust-cache@v2
         with:
           workspaces: "packages/renderer -> target"
       - name: Install
@@ -62,11 +62,11 @@ jobs:
         run: |
           cd packages/lambda && pnpm run testintegration
   ssr-tests:
-    runs-on: ubuntu-latest
+    runs-on: warp-ubuntu-latest-x64-4x
     name: SSR integration
     steps:
       - uses: actions/checkout@main
-      - uses: actions/setup-node@v3
+      - uses: WarpBuilds/setup-node@v4
         with:
           node-version: 16
       - uses: oven-sh/setup-bun@v1
@@ -89,7 +89,7 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: WarpBuilds/setup-python@v5
         with:
           python-version: "3.11"
 
@@ -111,7 +111,7 @@ jobs:
             packages/example/node_modules/.cache
             packages/google-fonts/.cache-css
           key: ts-${{ runner.os }}-node16-v3
-      - uses: Swatinem/rust-cache@v2
+      - uses: WarpBuilds/rust-cache@v2
         with:
           workspaces: "packages/renderer -> target"
       - name: Build cache
@@ -129,11 +129,11 @@ jobs:
         run: |
           cd packages/it-tests && bun run testssr
   lint:
-    runs-on: ubuntu-latest
+    runs-on: warp-ubuntu-latest-x64-4x
     name: Linting + Formatting
     steps:
       - uses: actions/checkout@main
-      - uses: actions/setup-node@v3
+      - uses: WarpBuilds/setup-node@v4
         with:
           node-version: 16
       - uses: oven-sh/setup-bun@v1
@@ -166,7 +166,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
+          - os: warp-ubuntu-latest-x64-4x
             node_version: 16
           - os: windows-latest
             node_version: 16
@@ -174,15 +174,15 @@ jobs:
             node_version: 16
           - os: macos-14
             node_version: 16
-          - os: ubuntu-latest
+          - os: warp-ubuntu-latest-x64-4x
             node_version: 20.5
     steps:
       - uses: actions/checkout@main
-      - uses: actions/setup-go@v5
+      - uses: WarpBuilds/setup-go@v5
         if: matrix.os == 'macos-14'
         with:
           go-version: "1.20"
-      - uses: actions/setup-node@v3
+      - uses: WarpBuilds/setup-node@v4
         with:
           node-version: ${{ matrix.node_version }}
       - uses: oven-sh/setup-bun@v1
@@ -208,7 +208,7 @@ jobs:
         with:
           path: node_modules/.cache
           key: deps-${{ runner.os }}-node${{ matrix.node_version }}-v3
-      - uses: Swatinem/rust-cache@v2
+      - uses: WarpBuilds/rust-cache@v2
         with:
           workspaces: "packages/renderer -> target"
       - name: Install
